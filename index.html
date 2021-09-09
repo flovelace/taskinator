@@ -8,20 +8,36 @@
     <title>Taskinator</title>
 </head>
 <body>
+
     <header>
         <h1 class="page-title">Taskinator</h1>
         <p>click the button below to add a new task!</p>
-        <button class="btn" id="save-task">Add Task</button>
+        <form id="task-form">
+            <div class="form-group">
+                <input type="text" name="task-name" placeholder="Enter Task Name" />
+            </div>
+                <div class="form-group">
+                    <select name="task-type" class="select-dropdown">
+                        <option value="" disabled selected>Pick a task type</option>
+                        <option value="Music">Music</option>
+                        <option value="Coding">Coding</option>
+                        <option value="Fun!">Fun!</option>
+                    </select>
+                </div>    
+                    <div class="form-group">
+                    <button class="btn" id="save-task" type="submit">Add Task</button>
+                    </div>                
+        </form>
     </header>
+
     <main class="page-content">
         <section class="task-list-wrapper">
             <h2 class="list-title">Tasks To Do</h2>
             <ul id="tasks-to-do" class="task-list">
-                <li class="task-item">A task is going to be added soon!</li>
             </ul>
         </section>
     </main>
-    <footer>&copy;2020 by Taskinator</footer>
+    <footer>&copy;2020 by Vandelay Industries</footer>
     <script src="./assets/js/script.js"></script>
     
 </body>
