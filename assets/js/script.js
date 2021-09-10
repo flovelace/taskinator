@@ -2,6 +2,8 @@ var pageContentE1 = document.querySelector("#page-content");
 var taskIDCounter = 0;
 var formE1 = document.querySelector('#task-form')
 var tasksToDoE1 = document.querySelector("#tasks-to-do");
+var tasksInProgressEl = document.querySelector("#tasks-in-progress");
+var tasksCompletedEl = document.querySelector("#tasks-completed");
 
 var taskFormHandler = function(event) {
     event.preventDefault();
@@ -16,16 +18,24 @@ var taskFormHandler = function(event) {
 
     formE1.reset();
 
-    //make the data an object
-    var taskDataObj = {
-        name: taskNameInput,
-        type: taskTypeInput
-    };
+    var isEdit = formE1.hasAttribute("data-task-id");
+    // has data attribute, so get the task id and call function to complete the editing process
+    if (isEdit) {
+        var taskId = formE1.getAttribute("data-task-id");
+        completeEditTask(taskNameInput, taskTypeInput, taskId);
+    }
 
-    //send it as an argument to createTaskE1
-    createTaskEl(taskDataObj);
+    //no data attribute, so create object as normal and pass to createtaskide1 function
+    else {
+        var taskDataObj = {
+            name: taskNameInput,
+            type: taskTypeInput
+        };
 
-}
+        createTaskEl(taskDataObj);
+    }
+
+};
 
 var createTaskEl = function(taskDataObj) {
     //create list item
@@ -93,14 +103,25 @@ var createTaskActions = function(taskID) {
     return actionContainerE1;
 };
 
+var completeEditTask = function(taskName, taskType, taskId) {
+    // find the matching list item
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+    // set new values
+    taskSelected.querySelector("h3.task-name").textContent = taskName;
+    taskSelected.querySelector("span.task-type").textContent = taskType;
 
+    alert("Task Updated!");
+
+    formE1.removeAttribute("data-task-id");
+    document.querySelector("#save-task").textContent = "Add Task";
+}
 
 var taskButtonHandler = function(event) {
     var targetEl = event.target;
 
     // edit button was clicked
     if (targetEl.matches(".edit-btn")) {
-        var taskID = targetEl.getAttribute("data-task-id");
+        var taskId = targetEl.getAttribute("data-task-id");
         editTask(taskId);
     }
 
@@ -110,11 +131,33 @@ var taskButtonHandler = function(event) {
       }
 };
 
+var taskStatusChangeHandler = function(event) {
+    // get the task item's id
+    var taskId = event.target.getAttribute("data-task-id");
+
+    // get the currently selected options value and convert to lowercase
+    var statusValue = event.target.value.toLowerCase();
+
+    // find the parent task item element based ont he id
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "'");
+
+    if (statusValue === "to do") {
+        tasksToDoE1.appendChild(taskSelected);
+    }
+    else if (statusValue === "in progress") {
+        tasksInProgressEl.appendChild(taskSelected);
+    }
+    else if (statusValue === "completed") {
+        tasksCompletedEl.appendChild(taskSelected);
+    }
+
+};
+
 var editTask = function(taskId) {
     console.log(taskId);
     // get task list item element
     var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
-
+    console.log(taskSelected);
   // get content from task name and type
   var taskName = taskSelected.querySelector("h3.task-name").textContent;
   console.log(taskName);
@@ -124,7 +167,8 @@ var editTask = function(taskId) {
   // write values of taskname and taskType to form to be edited
   document.querySelector("input[name='task-name']").value = taskName;
   document.querySelector("select[name='task-type']").value = taskType;
-
+  document.querySelector("#save-task").textContent = "Save Task";
+  formE1.setAttribute("data-task-Id", taskId);
 };
 
 var deleteTask = function(taskId) {
@@ -136,3 +180,4 @@ var deleteTask = function(taskId) {
 
 formE1.addEventListener("submit", taskFormHandler);
 pageContentE1.addEventListener("click", taskButtonHandler);
+pageContentE1.addEventListener("change", taskStatusChangeHandler);
