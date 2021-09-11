@@ -4,6 +4,7 @@ var formE1 = document.querySelector('#task-form')
 var tasksToDoE1 = document.querySelector("#tasks-to-do");
 var tasksInProgressEl = document.querySelector("#tasks-in-progress");
 var tasksCompletedEl = document.querySelector("#tasks-completed");
+
 var tasks = [];
 
 var taskFormHandler = function(event) {
@@ -58,6 +59,25 @@ var createTaskEl = function(taskDataObj) {
     listItemE1.appendChild(taskActionsE1);
     
     listItemE1.appendChild(taskInfoE1);
+    
+    switch (taskDataObj.status) {
+        case "to do":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 0;
+          tasksToDoEl.append(listItemEl);
+          break;
+        case "in progress":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 1;
+          tasksInProgressEl.append(listItemEl);
+          break;
+        case "completed":
+          taskActionsEl.querySelector("select[name='status-change']").selectedIndex = 2;
+          tasksCompletedEl.append(listItemEl);
+          break;
+        default:
+          console.log("Something went wrong!");
+      }
+    
+    
     taskDataObj.id = taskIDCounter;
 
     tasks.push(taskDataObj);
@@ -221,9 +241,28 @@ var deleteTask = function(taskId) {
     saveTasks();
   };
 
-var saveTasks = function() {
+  var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+  };
+  
+  var loadTasks = function() {
+    var savedTasks = localStorage.getItem("tasks");
+    // if there are no tasks, set tasks to an empty array and return out of the function
+    if (!savedTasks) {
+      return false;
+    }
+    console.log("Saved tasks found!");
+    // else, load up saved tasks
+  
+    // parse into array of objects
+    savedTasks = JSON.parse(savedTasks);
+  
+    // loop through savedTasks array
+    for (var i = 0; i < savedTasks.length; i++) {
+      // pass each task object into the `createTaskEl()` function
+      createTaskEl(savedTasks[i]);
+    }
+  };
 
 formE1.addEventListener("submit", taskFormHandler);
 pageContentE1.addEventListener("click", taskButtonHandler);
